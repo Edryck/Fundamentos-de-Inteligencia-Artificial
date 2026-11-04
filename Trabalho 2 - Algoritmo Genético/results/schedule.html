@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grade de horários</title>
+<style>
+:root{--bg:#f6f7f9;--surface:#fff;--text:#1b1f24;--muted:#5b6570;--line:#d5dae0;--accent:#1f5fbf;--accent-text:#fff;--head:#e8edf3;--warn-bg:#fff4d6;--warn-text:#5c4300}
+@media (prefers-color-scheme:dark){:root{--bg:#101318;--surface:#181c22;--text:#e7eaee;--muted:#9aa4af;--line:#2d343d;--accent:#6ea2ff;--accent-text:#0b1220;--head:#222831;--warn-bg:#3a2f12;--warn-text:#f1d98a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.4}
+main{max-width:960px;margin:0 auto;padding:16px}
+h1{font-size:1.25rem;margin:0 0 8px}
+.warning{background:var(--warn-bg);color:var(--warn-text);padding:8px 12px;border-radius:6px;margin:0 0 12px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.nav button{background:var(--accent);color:var(--accent-text);border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+.nav button:disabled{opacity:.4;cursor:default}
+.counter{font-weight:600;text-align:center}
+.slide{display:none}
+.slide.active{display:block}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;font-size:.85rem}
+th{background:var(--head)}
+td.empty{background:transparent}
+.time{color:var(--muted);font-size:.75rem;white-space:nowrap}
+.code{font-weight:600;display:block}
+.prof{color:var(--muted);display:block;font-size:.75rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Grade de horários</h1>
+<p class="warning">Grade simulada a partir dos professores de 2026/2. Não é a grade oficial.</p>
+<div class="nav">
+<button type="button" id="prev">Anterior</button>
+<span class="counter" id="counter"></span>
+<button type="button" id="next">Próximo</button>
+</div>
+<section class="slide" data-period="1">
+<h2>Período 1 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td class="empty"></td><td><span class="code">CC1MBD</span><span class="prof">LEILIANE</span></td><td class="empty"></td><td><span class="code">MA1LM</span><span class="prof">DAVI</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td class="empty"></td><td><span class="code">CC1MBD</span><span class="prof">LEILIANE</span></td><td class="empty"></td><td><span class="code">MA1LM</span><span class="prof">DAVI</span></td><td><span class="code">MA1FM</span><span class="prof">JOAO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">MA1LM</span><span class="prof">DAVI</span></td><td><span class="code">MA1FM</span><span class="prof">JOAO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC1MBD</span><span class="prof">LEILIANE</span></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC1MBD</span><span class="prof">LEILIANE</span></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td><span class="code">MA1FM</span><span class="prof">JOAO</span></td><td class="empty"></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">MA1FM</span><span class="prof">JOAO</span></td><td class="empty"></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td><span class="code">HU1LA</span><span class="prof">VERA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td><span class="code">CC1ICC</span><span class="prof">GIUVANE</span></td><td><span class="code">CC1AED1</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td><span class="code">HU1LA</span><span class="prof">VERA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td class="empty"></td><td><span class="code">CC1ICC</span><span class="prof">GIUVANE</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">HU1LA</span><span class="prof">VERA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td><span class="code">CC1ICC</span><span class="prof">GIUVANE</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="2">
+<h2>Período 2 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">OPHE</span><span class="prof">PAULA</span></td><td><span class="code">CC2POO</span><span class="prof">GIUVANE</span></td><td><span class="code">OPHRHL</span><span class="prof">PAULA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">OPHE</span><span class="prof">PAULA</span></td><td><span class="code">CC2POO</span><span class="prof">GIUVANE</span></td><td><span class="code">OPHRHL</span><span class="prof">PAULA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td class="empty"></td><td><span class="code">MA2MA</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC2CLD</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">CC2ER</span><span class="prof">DAVI</span></td><td><span class="code">MA2MA</span><span class="prof">EVANDRO NAKAJIM</span></td><td><span class="code">OPHMP</span><span class="prof">MEIRA</span></td><td><span class="code">CC2POO</span><span class="prof">GIUVANE</span></td><td><span class="code">CC2CLD</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td><span class="code">CC2ER</span><span class="prof">DAVI</span></td><td class="empty"></td><td><span class="code">OPHMP</span><span class="prof">MEIRA</span></td><td><span class="code">CC2POO</span><span class="prof">GIUVANE</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td><span class="code">CC2CLD</span><span class="prof">GLORIA</span></td><td class="empty"></td><td><span class="code">MA2MA</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td><span class="code">CC2AED2</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC2CLD</span><span class="prof">GLORIA</span></td><td class="empty"></td><td><span class="code">MA2MA</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">CC2AED2</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC2ER</span><span class="prof">DAVI</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td class="empty"></td><td><span class="code">CC2AED2</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC2ER</span><span class="prof">DAVI</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td><span class="code">CC2AED2</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="3">
+<h2>Período 3 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td><span class="code">CC3ES</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">MA3CA</span><span class="prof">VANDERLEA</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td><span class="code">CC3ES</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td><span class="code">MA3CA</span><span class="prof">VANDERLEA</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td><span class="code">MA3CA</span><span class="prof">VANDERLEA</span></td><td class="empty"></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td><span class="code">MA3CA</span><span class="prof">VANDERLEA</span></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td><span class="code">MA3AL</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">CC3AED3</span><span class="prof">THIAGO</span></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td><span class="code">MA3AL</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td><span class="code">CC3AED3</span><span class="prof">THIAGO</span></td><td><span class="code">CC3PI1</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">MA3AL</span><span class="prof">EVANDRO NAKAJIM</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td><span class="code">CC3ES</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">CC3ES</span><span class="prof">WELLINGTON</span></td><td><span class="code">CC3AED3</span><span class="prof">THIAGO</span></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td><span class="code">CC3AED3</span><span class="prof">THIAGO</span></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">CC3AOC</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td><span class="code">CC3PI1</span><span class="prof">AGNALDO</span></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="4">
+<h2>Período 4 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td><span class="code">CC4LBD</span><span class="prof">LEILIANE</span></td><td><span class="code">CC4SO</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td><span class="code">OPHIT2</span><span class="prof">VERA</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td><span class="code">CC4LBD</span><span class="prof">LEILIANE</span></td><td><span class="code">CC4SO</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td><span class="code">OPHIT2</span><span class="prof">VERA</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td><span class="code">CC4IHC</span><span class="prof">WELLINGTON</span></td><td><span class="code">MA4PE</span><span class="prof">JOAO</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td><span class="code">CC4IHC</span><span class="prof">WELLINGTON</span></td><td><span class="code">MA4PE</span><span class="prof">JOAO</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">MA4PE</span><span class="prof">JOAO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">CC4LBD</span><span class="prof">LEILIANE</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4SO</span><span class="prof">AGNALDO</span></td><td><span class="code">MA4PE</span><span class="prof">JOAO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td><span class="code">CC4LBD</span><span class="prof">LEILIANE</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4SO</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4IHC</span><span class="prof">WELLINGTON</span></td><td><span class="code">CC4PO</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td><span class="code">CC4RC</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4IHC</span><span class="prof">WELLINGTON</span></td><td><span class="code">CC4PO</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">CC4RC</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td><span class="code">CC4RC</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4PO</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td><span class="code">CC4RC</span><span class="prof">AGNALDO</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC4PO</span><span class="prof">GLORIA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="5">
+<h2>Período 5 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td><span class="code">CC5AG</span><span class="prof">LEILIANE</span></td><td><span class="code">CC5SDT</span><span class="prof">RAFAEL TESSER</span></td><td><span class="code">MA5MN</span><span class="prof">VANDERLEA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td><span class="code">CC5QS</span><span class="prof">VERA</span></td><td class="empty"></td><td><span class="code">CC5AG</span><span class="prof">LEILIANE</span></td><td><span class="code">CC5SDT</span><span class="prof">RAFAEL TESSER</span></td><td><span class="code">MA5MN</span><span class="prof">VANDERLEA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">CC5QS</span><span class="prof">VERA</span></td><td><span class="code">CC5AG</span><span class="prof">LEILIANE</span></td><td><span class="code">CC5SDT</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td><td><span class="code">MA5MN</span><span class="prof">VANDERLEA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td class="empty"></td><td><span class="code">CC5AG</span><span class="prof">LEILIANE</span></td><td><span class="code">CC5SDT</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td><span class="code">CC5PLDS</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td><span class="code">CC5PLDS</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td><span class="code">CC5PI2</span><span class="prof">PAULA</span></td><td class="empty"></td><td><span class="code">CC5PI2</span><span class="prof">MEIRA</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">CC5QS</span><span class="prof">VERA</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">CC5QS</span><span class="prof">VERA</span></td><td class="empty"></td><td><span class="code">CC5PLDS</span><span class="prof">DJONATHAM</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC5PLDS</span><span class="prof">DJONATHAM</span></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="6">
+<h2>Período 6 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td><span class="code">MA6PO</span><span class="prof">JOAO</span></td><td><span class="code">CC6PDSW</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td><span class="code">CC6LFTC</span><span class="prof">FRANCK</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td><span class="code">MA6PO</span><span class="prof">JOAO</span></td><td><span class="code">CC6PDSW</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td><span class="code">CC6LFTC</span><span class="prof">FRANCK</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td><span class="code">MA6PO</span><span class="prof">JOAO</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">TCC1</span><span class="prof">FRANCK</span></td><td><span class="code">CC6IBDDA</span><span class="prof">ARLETE</span></td><td><span class="code">CC6TRC</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">CC6LFTC</span><span class="prof">FRANCK</span></td><td class="empty"></td><td><span class="code">TCC1</span><span class="prof">FRANCK</span></td><td><span class="code">CC6IBDDA</span><span class="prof">ARLETE</span></td><td><span class="code">CC6TRC</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td><span class="code">CC6LFTC</span><span class="prof">FRANCK</span></td><td class="empty"></td><td><span class="code">TCC1</span><span class="prof">FRANCK</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td><span class="code">CC6IBDDA</span><span class="prof">ARLETE</span></td><td class="empty"></td><td><span class="code">CC6FIA</span><span class="prof">THIAGO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td class="empty"></td><td><span class="code">CC6IBDDA</span><span class="prof">ARLETE</span></td><td class="empty"></td><td><span class="code">CC6FIA</span><span class="prof">THIAGO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC6FIA</span><span class="prof">THIAGO</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td class="empty"></td><td><span class="code">CC6TRC</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC6PDSW</span><span class="prof">WELLINGTON</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td class="empty"></td><td><span class="code">CC6TRC</span><span class="prof">RAFAEL TESSER</span></td><td class="empty"></td><td class="empty"></td><td><span class="code">CC6PDSW</span><span class="prof">WELLINGTON</span></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="7">
+<h2>Período 7 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">OPETDS</span><span class="prof">GIUVANE</span></td><td><span class="code">OPETCD</span><span class="prof">ARLETE</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td><span class="code">CC7VC</span><span class="prof">ANDERSON</span></td><td><span class="code">OPETDS</span><span class="prof">GIUVANE</span></td><td><span class="code">OPETCD</span><span class="prof">ARLETE</span></td><td><span class="code">CC7C</span><span class="prof">FRANCK</span></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td><span class="code">CC7VC</span><span class="prof">ANDERSON</span></td><td><span class="code">CC7CS</span><span class="prof">GLORIA</span></td><td class="empty"></td><td><span class="code">CC7C</span><span class="prof">FRANCK</span></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td><span class="code">OPEIE</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC7CS</span><span class="prof">GLORIA</span></td><td><span class="code">OPEIE</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC7C</span><span class="prof">FRANCK</span></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td><span class="code">OPETCD</span><span class="prof">ARLETE</span></td><td><span class="code">OPEIE</span><span class="prof">DJONATHAM</span></td><td class="empty"></td><td><span class="code">OPEIE</span><span class="prof">DJONATHAM</span></td><td><span class="code">CC7C</span><span class="prof">FRANCK</span></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td><span class="code">OPETCD</span><span class="prof">ARLETE</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td class="empty"></td><td><span class="code">OPETDS</span><span class="prof">GIUVANE</span></td><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td><span class="code">CC7IAA</span><span class="prof">THIAGO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td class="empty"></td><td><span class="code">OPERP</span><span class="prof">FRANCK</span></td><td><span class="code">OPETDS</span><span class="prof">GIUVANE</span></td><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td><span class="code">CC7IAA</span><span class="prof">THIAGO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">OPERP</span><span class="prof">FRANCK</span></td><td><span class="code">OPERP</span><span class="prof">FRANCK</span></td><td class="empty"></td><td><span class="code">CC7PI3</span><span class="prof">ARLETE</span></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td><span class="code">OPERP</span><span class="prof">FRANCK</span></td><td class="empty"></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td><td><span class="code">CC7CS</span><span class="prof">GLORIA</span></td><td><span class="code">CC7IAA</span><span class="prof">THIAGO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td><span class="code">CC7VC</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td><td><span class="code">CC7CS</span><span class="prof">GLORIA</span></td><td><span class="code">CC7IAA</span><span class="prof">THIAGO</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td><span class="code">CC7VC</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td><span class="code">CC7PI3</span><span class="prof">DAVI</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide" data-period="8">
+<h2>Período 8 de 8</h2>
+<div class="scroll"><table>
+<thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 <span class="time">07:30</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M2 <span class="time">08:20</span></th><td><span class="code">OPEPPD</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M3 <span class="time">09:10</span></th><td><span class="code">OPEPPD</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M4 <span class="time">10:20</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M5 <span class="time">11:10</span></th><td class="empty"></td><td><span class="code">CC8CG</span><span class="prof">ANDERSON</span></td><td><span class="code">OPEDADM</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">M6 <span class="time">12:00</span></th><td class="empty"></td><td><span class="code">CC8CG</span><span class="prof">ANDERSON</span></td><td><span class="code">OPEDADM</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T1 <span class="time">13:00</span></th><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">TCC2</span><span class="prof">FRANCK</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T2 <span class="time">13:50</span></th><td><span class="code">CC8CG</span><span class="prof">ANDERSON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td><span class="code">TCC2</span><span class="prof">FRANCK</span></td><td class="empty"></td></tr>
+<tr><th scope="row">T3 <span class="time">14:40</span></th><td><span class="code">CC8CG</span><span class="prof">ANDERSON</span></td><td><span class="code">OPEPPD</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T4 <span class="time">15:50</span></th><td class="empty"></td><td><span class="code">OPEPPD</span><span class="prof">GIANI</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T5 <span class="time">16:40</span></th><td><span class="code">OPEDADM</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+<tr><th scope="row">T6 <span class="time">17:30</span></th><td><span class="code">OPEDADM</span><span class="prof">WELLINGTON</span></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td></tr>
+</tbody>
+</table></div>
+</section>
+</main>
+<script>
+(function(){
+var slides=document.querySelectorAll('.slide');
+var counter=document.getElementById('counter');
+var prev=document.getElementById('prev');
+var next=document.getElementById('next');
+var current=0;
+function show(index){
+if(index<0||index>=slides.length){return;}
+slides[current].classList.remove('active');
+current=index;
+slides[current].classList.add('active');
+counter.textContent='Per\u00edodo '+(current+1)+' de '+slides.length;
+prev.disabled=current===0;
+next.disabled=current===slides.length-1;
+}
+prev.addEventListener('click',function(){show(current-1);});
+next.addEventListener('click',function(){show(current+1);});
+document.addEventListener('keydown',function(event){
+if(event.key==='ArrowLeft'){show(current-1);}
+if(event.key==='ArrowRight'){show(current+1);}
+});
+show(0);
+})();
+</script>
+</body>
+</html>
