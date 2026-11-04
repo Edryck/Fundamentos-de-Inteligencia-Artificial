@@ -1,0 +1,54 @@
+code,name
+CC1AED1,Algoritmos e Estrutura de Dados I
+CC1ICC,Introdução à Ciência da Computação
+CC1MBD,Modelagem de Banco de Dados
+CC2AED2,Algoritmos e Estrutura de Dados II
+CC2CLD,Circuitos Lógicos Digitais
+CC2ER,Engenharia de Requisitos
+CC2POO,Programação Orientada a Objetos
+CC3AED3,Algoritmos e Estrutura de Dados III
+CC3AOC,Arquitetura e Organização de Computadores
+CC3ES,Engenharia de Software
+CC3PI1,Projeto Integrador I: Computação e Educação
+CC4IHC,Interação Humano Computador
+CC4LBD,Laboratório de Banco de Dados
+CC4PO,Pesquisa e Ordenação
+CC4RC,Redes de Computadores
+CC4SO,Sistemas Operacionais
+CC5AG,Algoritmos em Grafos
+CC5PI2,Projeto Integrador II: Desenvolvimento, Inovação e Empreendedorismo Social
+CC5PLDS,Paradigmas de Linguagens e Desenvolvimento de Sistemas
+CC5QS,Qualidade de Software
+CC5SDT,Sistemas Distribuídos e Tecnologias
+CC6FIA,Fundamentos de Inteligência Artificial
+CC6IBDDA,Introdução a Big Data e Data Analytics
+CC6LFTC,Linguagens Formais e Teoria da Computação
+CC6PDSW,Projeto e Desenvolvimento de Sistemas Web
+CC6TRC,Tecnologias de Redes de Computadores
+CC7C,Compiladores
+CC7CS,Cibersegurança
+CC7IAA,Inteligência Artificial Aplicada
+CC7PI3,Projeto Integrador III: Tecnologia e Mundo do Trabalho
+CC7VC,Visão Computacional
+CC8CG,Computação Gráfica
+HU1LA,Linguagem Acadêmica
+MA1FM,Fundamentos de Matemática
+MA1LM,Lógica Matemática
+MA2MA,Matemática Aplicada
+MA3AL,Álgebra Linear
+MA3CA,Cálculo Aplicado
+MA4PE,Probabilidade e Estatística
+MA5MN,Métodos Numéricos
+MA6PO,Pesquisa Operacional
+OPEDADM,Desenvolvimento de Aplicações para Dispositivos Móveis
+OPEIE,Informática na Educação
+OPEPPD,Programação Paralela e Distribuída
+OPERP,Redes de Petri
+OPETCD,Tópicos em Ciência de Dados
+OPETDS,Tecnologia em Desenvolvimento de Sistemas
+OPHE,Empreendedorismo
+OPHIT2,Inglês Técnico II
+OPHMP,Metodologia da Pesquisa
+OPHRHL,Relações Humanas e Liderança
+TCC1,Trabalho de Conclusão de Curso I
+TCC2,Trabalho de Conclusão de Curso II

@@ -21,6 +21,7 @@ void test_fitness_run(void);
 void test_genetic_run(void);
 void test_cli_run(void);
 void test_report_run(void);
+void test_real_schedule_run(void);
 
 #include "../src/data.h"
 #include "../src/chromosome.h"

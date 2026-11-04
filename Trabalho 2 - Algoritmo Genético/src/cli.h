@@ -6,6 +6,7 @@
 
 typedef struct {
     unsigned long long seed;
+    int seed_given;
     int periods;
     int runs;
     GeneticConfig genetic;

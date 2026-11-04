@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include "cli.h"
 #include "data.h"
 #include "chromosome.h"
 #include "genetic.h"
 #include "report.h"
+#include "real_schedule.h"
 
 static Dataset dataset;
 static BlockList list;
+static RealSchedule real;
 
 int main(int argc, char **argv)
 {
@@ -29,6 +32,14 @@ int main(int argc, char **argv)
     error[0] = '\0';
     if (cli_parse(&options, argc, argv, error, sizeof(error)) != 0) {
         fprintf(stderr, "error: %s\n", error);
+        return 1;
+    }
+    if (!options.seed_given) {
+        options.seed = (unsigned long long)time(NULL) * 1000003ULL + (unsigned long long)getpid();
+        printf("no --seed given, using seed %llu\n", options.seed);
+    }
+    if (options.periods == 8 && real_schedule_load(&real, "data", error, sizeof(error)) != 0) {
+        fprintf(stderr, "error: cannot load real schedule data: %s\n", error);
         return 1;
     }
     if (dataset_load(&dataset, "data", options.periods, error, sizeof(error)) != 0) {
@@ -90,7 +101,8 @@ int main(int argc, char **argv)
         return 1;
     }
     if (options.periods == 8
-        && report_write_html("results/schedule.html", &best_result.best, &list, &dataset, options.periods) != 0) {
+        && report_write_html("results/schedule.html", &best_result.best, &list, &dataset, options.periods,
+                             &real, best_seed) != 0) {
         fprintf(stderr, "error: could not write results files\n");
         genetic_result_free(&best_result);
         return 1;
@@ -102,5 +114,10 @@ int main(int argc, char **argv)
         return 1;
     }
     genetic_result_free(&best_result);
+    if (options.periods == 8) {
+        printf("html: results/schedule.html\n");
+    } else {
+        printf("results/schedule.html is only generated with --periods 8\n");
+    }
     return 0;
 }

@@ -12,6 +12,7 @@
 static Dataset dataset;
 static BlockList list;
 static Individual individual;
+static RealSchedule real;
 static char lines[40][256];
 
 static int line_equals(FILE *file, const char *expected)
@@ -227,6 +228,36 @@ static void prepare_html_fixture(void)
     list.blocks[1].professor = 1;
     individual.genes[0] = 0;
     individual.genes[1] = 12;
+    individual.penalty = 7;
+    memset(&real, 0, sizeof(real));
+    real.lesson_count = 4;
+    strcpy(real.lessons[0].code, "AAA1");
+    real.lessons[0].period = 1;
+    strcpy(real.lessons[0].professor, "ZELDA");
+    real.lessons[0].slot = 0;
+    strcpy(real.lessons[0].room, "E09");
+    strcpy(real.lessons[1].code, "OPX1");
+    real.lessons[1].period = 1;
+    strcpy(real.lessons[1].professor, "LINK");
+    real.lessons[1].slot = 0;
+    strcpy(real.lessons[1].room, "REMOTA");
+    strcpy(real.lessons[2].code, "B&B<2>");
+    real.lessons[2].period = 2;
+    strcpy(real.lessons[2].professor, "X&Y");
+    real.lessons[2].slot = 66 - 1;
+    strcpy(real.lessons[2].room, "L<5>");
+    strcpy(real.lessons[3].code, "AAA1");
+    real.lessons[3].period = 3;
+    strcpy(real.lessons[3].professor, "ZELDA");
+    real.lessons[3].slot = 6;
+    strcpy(real.lessons[3].room, "L5");
+    real.name_count = 3;
+    strcpy(real.name_codes[0], "AAA1");
+    strcpy(real.names[0], "Algoritmos Alpha");
+    strcpy(real.name_codes[1], "OPX1");
+    strcpy(real.names[1], "Optativa Xis");
+    strcpy(real.name_codes[2], "B&B<2>");
+    strcpy(real.names[2], "Nome <b> & Co");
 }
 
 static void test_html_pages(void)
@@ -234,7 +265,7 @@ static void test_html_pages(void)
     char *text;
 
     prepare_html_fixture();
-    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8) == 0);
+    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8, &real, 99) == 0);
     text = read_whole_file(TEST_DIRECTORY "/schedule.html");
     CHECK(text != NULL);
     if (text != NULL) {
@@ -253,7 +284,7 @@ static void test_html_warning(void)
     char *text;
 
     prepare_html_fixture();
-    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8) == 0);
+    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8, &real, 99) == 0);
     text = read_whole_file(TEST_DIRECTORY "/schedule.html");
     CHECK(text != NULL);
     if (text != NULL) {
@@ -265,12 +296,62 @@ static void test_html_warning(void)
     }
 }
 
+static void test_html_tables(void)
+{
+    char *text;
+
+    prepare_html_fixture();
+    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8, &real, 99) == 0);
+    text = read_whole_file(TEST_DIRECTORY "/schedule.html");
+    CHECK(text != NULL);
+    if (text != NULL) {
+        CHECK(count_occurrences(text, "<table>") == 16);
+        CHECK(count_occurrences(text, "Grade real 2026/2") == 8 + 1);
+        CHECK(count_occurrences(text, "Grade gerada pelo AG") == 8 + 1);
+        CHECK(count_occurrences(text, "Seed 99 \xc2\xb7 Penalidade 7") == 8);
+        CHECK(count_occurrences(text, "Intervalo Manh\xc3\xa3 10:00") == 16);
+        CHECK(count_occurrences(text, "Intervalo Tarde 15:30") == 16);
+        CHECK(count_occurrences(text, "<th>Segunda</th>") == 16);
+        CHECK(count_occurrences(text, "<th>S\xc3\xa1" "bado</th>") == 16);
+        CHECK(count_occurrences(text, "M1 <span") == 16);
+        CHECK(count_occurrences(text, "T6 <span") == 16);
+        CHECK(strstr(text, "viewport") != NULL);
+        CHECK(strstr(text, "@media (prefers-color-scheme:dark)") != NULL);
+        CHECK(strstr(text, "ArrowRight") != NULL);
+        CHECK(strstr(text, "<!--") == NULL);
+        free(text);
+    }
+}
+
+static void test_html_real_content(void)
+{
+    char *text;
+
+    prepare_html_fixture();
+    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8, &real, 99) == 0);
+    text = read_whole_file(TEST_DIRECTORY "/schedule.html");
+    CHECK(text != NULL);
+    if (text != NULL) {
+        CHECK(strstr(text, "<span class=\"name\">Algoritmos Alpha</span><span class=\"code\">AAA1</span>"
+                           "<span class=\"prof\">ZELDA</span><span class=\"room\">E09</span>") != NULL);
+        CHECK(strstr(text, "<span class=\"name\">Optativa Xis</span>") != NULL);
+        CHECK(strstr(text, "<span class=\"room\">REMOTA</span>") != NULL);
+        CHECK(strstr(text, "E09</span></div><div class=\"lesson\"><span class=\"name\">Optativa Xis") != NULL);
+        CHECK(strstr(text, "Nome &lt;b&gt; &amp; Co") != NULL);
+        CHECK(strstr(text, "L&lt;5&gt;") != NULL);
+        CHECK(strstr(text, "Nome <b>") == NULL);
+        CHECK(count_occurrences(text, "<span class=\"room\">") == 4);
+        CHECK(strstr(text, "O aviso vale para a tabela Grade gerada pelo AG") != NULL);
+        free(text);
+    }
+}
+
 static void test_html_course(void)
 {
     char *text;
 
     prepare_html_fixture();
-    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8) == 0);
+    CHECK(report_write_html(TEST_DIRECTORY "/schedule.html", &individual, &list, &dataset, 8, &real, 99) == 0);
     text = read_whole_file(TEST_DIRECTORY "/schedule.html");
     CHECK(text != NULL);
     if (text != NULL) {
@@ -295,6 +376,8 @@ void test_report_run(void)
     test_schedule_print();
     test_html_pages();
     test_html_warning();
+    test_html_tables();
+    test_html_real_content();
     test_html_course();
     (void)remove(TEST_DIRECTORY "/history.csv");
     (void)remove(TEST_DIRECTORY "/summary.csv");

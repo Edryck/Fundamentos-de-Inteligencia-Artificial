@@ -56,6 +56,7 @@ int cli_parse(CliOptions *options, int argc, char **argv, char *error, size_t er
     double rate;
 
     options->seed = 1;
+    options->seed_given = 0;
     options->periods = 4;
     options->runs = 1;
     options->genetic = genetic_default_config();
@@ -89,6 +90,7 @@ int cli_parse(CliOptions *options, int argc, char **argv, char *error, size_t er
                 return -1;
             }
             options->seed = seed;
+            options->seed_given = 1;
         } else if (strcmp(name, "--crossover") == 0 || strcmp(name, "--mutation") == 0) {
             if (parse_rate(text, &rate) != 0) {
                 error_set(error, error_size, "invalid value for %s", name);

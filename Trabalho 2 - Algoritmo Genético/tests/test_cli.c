@@ -20,6 +20,7 @@ static void test_cli_defaults(void)
 
     CHECK(parse(&options, 1, argv, error) == 0);
     CHECK(options.seed == 1);
+    CHECK(options.seed_given == 0);
     CHECK(options.periods == 4);
     CHECK(options.runs == 1);
     CHECK(options.genetic.max_generations >= 500);
@@ -35,12 +36,31 @@ static void test_cli_values(void)
 
     CHECK(parse(&options, 15, argv, error) == 0);
     CHECK(options.seed == 42);
+    CHECK(options.seed_given == 1);
     CHECK(options.periods == 8);
     CHECK(options.runs == 30);
     CHECK(options.genetic.population_size == 50);
     CHECK(options.genetic.crossover_rate == 0.8);
     CHECK(options.genetic.mutation_rate == 0.05);
     CHECK(options.genetic.max_generations == 700);
+}
+
+static void test_cli_seed_given(void)
+{
+    CliOptions options;
+    char error[256];
+    char *explicit_one[] = {"trabalho2", "--seed", "1"};
+    char *zero[] = {"trabalho2", "--seed", "0"};
+    char *other[] = {"trabalho2", "--runs", "3"};
+
+    CHECK(parse(&options, 3, explicit_one, error) == 0);
+    CHECK(options.seed == 1);
+    CHECK(options.seed_given == 1);
+    CHECK(parse(&options, 3, zero, error) == 0);
+    CHECK(options.seed == 0);
+    CHECK(options.seed_given == 1);
+    CHECK(parse(&options, 3, other, error) == 0);
+    CHECK(options.seed_given == 0);
 }
 
 static void expect_invalid(int argc, char **argv)
@@ -140,6 +160,7 @@ void test_cli_run(void)
 {
     test_cli_defaults();
     test_cli_values();
+    test_cli_seed_given();
     test_cli_invalid();
     test_verify_real_data();
     test_verify_hand_built();

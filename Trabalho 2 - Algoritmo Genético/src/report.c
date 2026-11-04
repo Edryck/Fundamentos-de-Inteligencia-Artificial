@@ -91,8 +91,9 @@ void report_print_schedule(FILE *output, const Individual *best, const BlockList
     }
 }
 
-#define MAX_CELL_BLOCKS 4
 #define SATURDAY_INDEX 5
+#define INTERVAL_AFTER_MORNING 3
+#define COLUMN_COUNT 7
 
 static const char *START_TIMES[SLOTS_PER_DAY] = {
     "07:30", "08:20", "09:10", "10:20", "11:10", "12:00",
@@ -111,12 +112,14 @@ static const char *HTML_HEAD =
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
     "<title>Grade de hor\xc3\xa1rios</title>\n"
     "<style>\n"
-    ":root{--bg:#f6f7f9;--surface:#fff;--text:#1b1f24;--muted:#5b6570;--line:#d5dae0;--accent:#1f5fbf;--accent-text:#fff;--head:#e8edf3;--warn-bg:#fff4d6;--warn-text:#5c4300}\n"
-    "@media (prefers-color-scheme:dark){:root{--bg:#101318;--surface:#181c22;--text:#e7eaee;--muted:#9aa4af;--line:#2d343d;--accent:#6ea2ff;--accent-text:#0b1220;--head:#222831;--warn-bg:#3a2f12;--warn-text:#f1d98a}}\n"
+    ":root{--bg:#f6f7f9;--surface:#fff;--text:#1b1f24;--muted:#5b6570;--line:#d5dae0;--accent:#1f5fbf;--accent-text:#fff;--head:#e8edf3;--interval:#eef1f5;--warn-bg:#fff4d6;--warn-text:#5c4300}\n"
+    "@media (prefers-color-scheme:dark){:root{--bg:#101318;--surface:#181c22;--text:#e7eaee;--muted:#9aa4af;--line:#2d343d;--accent:#6ea2ff;--accent-text:#0b1220;--head:#222831;--interval:#1e242c;--warn-bg:#3a2f12;--warn-text:#f1d98a}}\n"
     "*{box-sizing:border-box}\n"
-    "body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.4}\n"
-    "main{max-width:960px;margin:0 auto;padding:16px}\n"
+    "body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.35}\n"
+    "main{max-width:1500px;margin:0 auto;padding:16px}\n"
     "h1{font-size:1.25rem;margin:0 0 8px}\n"
+    "h2{font-size:1.1rem;margin:0 0 8px}\n"
+    "h3{font-size:1rem;margin:0}\n"
     ".warning{background:var(--warn-bg);color:var(--warn-text);padding:8px 12px;border-radius:6px;margin:0 0 12px}\n"
     ".nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}\n"
     ".nav button{background:var(--accent);color:var(--accent-text);border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}\n"
@@ -124,20 +127,32 @@ static const char *HTML_HEAD =
     ".counter{font-weight:600;text-align:center}\n"
     ".slide{display:none}\n"
     ".slide.active{display:block}\n"
+    ".pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}\n"
+    "@media (min-width:1100px){.pair{grid-template-columns:repeat(2,minmax(0,1fr))}}\n"
+    ".panel{min-width:0}\n"
+    ".panel-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:6px}\n"
+    ".meta{color:var(--muted);font-size:.8rem}\n"
     ".scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}\n"
-    "table{border-collapse:collapse;width:100%;min-width:640px}\n"
-    "th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;font-size:.85rem}\n"
+    "table{border-collapse:collapse;width:100%;min-width:560px;table-layout:fixed}\n"
+    "th,td{border:1px solid var(--line);padding:4px 5px;text-align:left;vertical-align:top;font-size:.72rem;overflow-wrap:break-word}\n"
     "th{background:var(--head)}\n"
+    "th.slot{width:56px}\n"
     "td.empty{background:transparent}\n"
-    ".time{color:var(--muted);font-size:.75rem;white-space:nowrap}\n"
-    ".code{font-weight:600;display:block}\n"
-    ".prof{color:var(--muted);display:block;font-size:.75rem}\n"
+    "tr.interval td{background:var(--interval);color:var(--muted);text-align:center;font-style:italic;padding:2px 5px}\n"
+    ".time{color:var(--muted);font-size:.68rem;font-weight:400;display:block;white-space:nowrap}\n"
+    ".lesson+.lesson{border-top:1px dashed var(--line);margin-top:4px;padding-top:4px}\n"
+    ".name{font-weight:600;display:block}\n"
+    ".code{display:block;color:var(--accent)}\n"
+    ".prof{color:var(--muted);display:block}\n"
+    ".room{color:var(--muted);display:block;font-style:italic}\n"
+    "@media (max-width:600px){th,td{font-size:.62rem;padding:3px}th.slot{width:54px}}\n"
     "</style>\n"
     "</head>\n"
     "<body>\n"
     "<main>\n"
     "<h1>Grade de hor\xc3\xa1rios</h1>\n"
-    "<p class=\"warning\">Grade simulada a partir dos professores de 2026/2. N\xc3\xa3o \xc3\xa9 a grade oficial.</p>\n"
+    "<p class=\"warning\">Grade simulada a partir dos professores de 2026/2. N\xc3\xa3o \xc3\xa9 a grade oficial. "
+    "O aviso vale para a tabela Grade gerada pelo AG; a Grade real 2026/2 vem dos mapas de aulas.</p>\n"
     "<div class=\"nav\">\n"
     "<button type=\"button\" id=\"prev\">Anterior</button>\n"
     "<span class=\"counter\" id=\"counter\"></span>\n"
@@ -183,88 +198,142 @@ static void html_escape(FILE *file, const char *text)
             fputs("&lt;", file);
         } else if (*text == '>') {
             fputs("&gt;", file);
+        } else if (*text == '"') {
+            fputs("&quot;", file);
         } else {
             fputc(*text, file);
         }
     }
 }
 
-static void html_write_cell(FILE *file, const int *cell_blocks, int cell_count, const BlockList *list, const Dataset *dataset)
+static void html_write_span(FILE *file, const char *css_class, const char *text)
 {
-    int index;
-    const Block *block;
-
-    if (cell_count == 0) {
-        fputs("<td class=\"empty\"></td>", file);
+    if (text == NULL || text[0] == '\0') {
         return;
     }
-    fputs("<td>", file);
-    for (index = 0; index < cell_count; index++) {
-        block = &list->blocks[cell_blocks[index]];
-        fputs("<span class=\"code\">", file);
-        html_escape(file, dataset->courses[block->course].code);
-        fputs("</span><span class=\"prof\">", file);
-        if (block->professor >= 0 && block->professor < dataset->professor_count) {
-            html_escape(file, dataset->professors[block->professor]);
-        }
-        fputs("</span>", file);
-    }
-    fputs("</td>", file);
+    fprintf(file, "<span class=\"%s\">", css_class);
+    html_escape(file, text);
+    fputs("</span>", file);
 }
 
-static void html_write_period(FILE *file, int period, int periods, const Individual *best, const BlockList *list, const Dataset *dataset)
+static void html_write_lesson(FILE *file, const RealSchedule *real, const char *code, const char *professor, const char *room)
 {
-    int cells[SLOTS_PER_DAY][DAYS_PER_WEEK][MAX_CELL_BLOCKS];
-    int counts[SLOTS_PER_DAY][DAYS_PER_WEEK];
-    int block_index;
-    int slot;
-    int day;
-    int offset;
-    int count;
-    const Block *block;
+    const char *name = real != NULL ? real_schedule_name(real, code) : NULL;
 
-    memset(counts, 0, sizeof(counts));
-    for (block_index = 0; block_index < list->block_count; block_index++) {
-        block = &list->blocks[block_index];
-        if (dataset->courses[block->course].period != period) {
-            continue;
-        }
-        for (slot = best->genes[block_index]; slot < best->genes[block_index] + block->length; slot++) {
-            if (slot < 0 || slot >= SLOT_COUNT) {
-                continue;
+    fputs("<div class=\"lesson\">", file);
+    html_write_span(file, "name", name != NULL ? name : code);
+    html_write_span(file, "code", code);
+    html_write_span(file, "prof", professor);
+    html_write_span(file, "room", room);
+    fputs("</div>", file);
+}
+
+static int html_real_cell(FILE *file, const RealSchedule *real, int period, int slot)
+{
+    int index;
+    int count = 0;
+    const RealLesson *lesson;
+
+    for (index = 0; index < real->lesson_count; index++) {
+        lesson = &real->lessons[index];
+        if (lesson->period == period && lesson->slot == slot) {
+            if (count == 0) {
+                fputs("<td>", file);
             }
-            day = slot / SLOTS_PER_DAY;
-            offset = slot % SLOTS_PER_DAY;
-            if (day == SATURDAY_INDEX && offset >= SLOTS_PER_HALF) {
-                continue;
-            }
-            count = counts[offset][day];
-            if (count < MAX_CELL_BLOCKS) {
-                cells[offset][day][count] = block_index;
-                counts[offset][day] = count + 1;
-            }
+            html_write_lesson(file, real, lesson->code, lesson->professor, lesson->room);
+            count++;
         }
     }
+    return count;
+}
 
-    fprintf(file, "<section class=\"slide\" data-period=\"%d\">\n", period);
-    fprintf(file, "<h2>Per\xc3\xadodo %d de %d</h2>\n", period, periods);
-    fputs("<div class=\"scroll\"><table>\n<thead><tr><th>Hor\xc3\xa1rio</th>", file);
+static int html_generated_cell(FILE *file, const Individual *best, const BlockList *list, const Dataset *dataset,
+                               const RealSchedule *real, int period, int slot)
+{
+    int block_index;
+    int count = 0;
+    const Block *block;
+    const Course *course;
+    const char *professor;
+
+    for (block_index = 0; block_index < list->block_count; block_index++) {
+        block = &list->blocks[block_index];
+        course = &dataset->courses[block->course];
+        if (course->period != period || slot < best->genes[block_index]
+            || slot >= best->genes[block_index] + block->length) {
+            continue;
+        }
+        if (count == 0) {
+            fputs("<td>", file);
+        }
+        professor = block->professor >= 0 && block->professor < dataset->professor_count
+            ? dataset->professors[block->professor] : NULL;
+        html_write_lesson(file, real, course->code, professor, NULL);
+        count++;
+    }
+    return count;
+}
+
+static void html_write_interval(FILE *file, const char *label, const char *time)
+{
+    fprintf(file, "<tr class=\"interval\"><td colspan=\"%d\">%s %s</td></tr>\n", COLUMN_COUNT, label, time);
+}
+
+static void html_write_table(FILE *file, int period, int generated, const Individual *best, const BlockList *list,
+                             const Dataset *dataset, const RealSchedule *real)
+{
+    int day;
+    int offset;
+    int slot;
+    int count;
+
+    fputs("<div class=\"scroll\"><table>\n<thead><tr><th class=\"slot\">Hor\xc3\xa1rio</th>", file);
     for (day = 0; day < DAYS_PER_WEEK; day++) {
         fprintf(file, "<th>%s</th>", DAY_NAMES[day]);
     }
     fputs("</tr></thead>\n<tbody>\n", file);
     for (offset = 0; offset < SLOTS_PER_DAY; offset++) {
+        if (offset == INTERVAL_AFTER_MORNING) {
+            html_write_interval(file, "Intervalo Manh\xc3\xa3", "10:00");
+        } else if (offset == SLOTS_PER_HALF + INTERVAL_AFTER_MORNING) {
+            html_write_interval(file, "Intervalo Tarde", "15:30");
+        }
         fprintf(file, "<tr><th scope=\"row\">%c%d <span class=\"time\">%s</span></th>",
                 offset < SLOTS_PER_HALF ? 'M' : 'T', offset % SLOTS_PER_HALF + 1, START_TIMES[offset]);
         for (day = 0; day < DAYS_PER_WEEK; day++) {
-            html_write_cell(file, cells[offset][day], counts[offset][day], list, dataset);
+            slot = day * SLOTS_PER_DAY + offset;
+            count = 0;
+            if (!(day == SATURDAY_INDEX && offset >= SLOTS_PER_HALF)) {
+                count = generated ? html_generated_cell(file, best, list, dataset, real, period, slot)
+                                  : html_real_cell(file, real, period, slot);
+            }
+            if (count == 0) {
+                fputs("<td class=\"empty\"></td>", file);
+            } else {
+                fputs("</td>", file);
+            }
         }
         fputs("</tr>\n", file);
     }
-    fputs("</tbody>\n</table></div>\n</section>\n", file);
+    fputs("</tbody>\n</table></div>\n", file);
 }
 
-int report_write_html(const char *path, const Individual *best, const BlockList *list, const Dataset *dataset, int periods)
+static void html_write_period(FILE *file, int period, int periods, const Individual *best, const BlockList *list,
+                              const Dataset *dataset, const RealSchedule *real, unsigned long long seed)
+{
+    fprintf(file, "<section class=\"slide\" data-period=\"%d\">\n", period);
+    fprintf(file, "<h2>Per\xc3\xadodo %d de %d</h2>\n<div class=\"pair\">\n", period, periods);
+    fputs("<div class=\"panel\">\n<div class=\"panel-head\"><h3>Grade real 2026/2</h3></div>\n", file);
+    html_write_table(file, period, 0, best, list, dataset, real);
+    fputs("</div>\n", file);
+    fprintf(file, "<div class=\"panel\">\n<div class=\"panel-head\"><h3>Grade gerada pelo AG</h3>"
+                  "<span class=\"meta\">Seed %llu \xc2\xb7 Penalidade %d</span></div>\n", seed, best->penalty);
+    html_write_table(file, period, 1, best, list, dataset, real);
+    fputs("</div>\n</div>\n</section>\n", file);
+}
+
+int report_write_html(const char *path, const Individual *best, const BlockList *list, const Dataset *dataset,
+                      int periods, const RealSchedule *real, unsigned long long seed)
 {
     FILE *file;
     int period;
@@ -275,7 +344,7 @@ int report_write_html(const char *path, const Individual *best, const BlockList 
     }
     fputs(HTML_HEAD, file);
     for (period = 1; period <= periods; period++) {
-        html_write_period(file, period, periods, best, list, dataset);
+        html_write_period(file, period, periods, best, list, dataset, real, seed);
     }
     fputs(HTML_TAIL, file);
     return fclose(file) == 0 ? 0 : -1;

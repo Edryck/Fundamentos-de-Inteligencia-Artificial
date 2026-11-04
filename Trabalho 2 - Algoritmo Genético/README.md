@@ -16,8 +16,8 @@ Opções:
 
 | Opção | Efeito |
 |---|---|
-| `--seed N` | seed inicial; a mesma seed gera sempre a mesma grade (padrão 1) |
-| `--periods 4` ou `8` | períodos considerados (padrão 4); com `8` também gera o HTML extra |
+| `--seed N` | seed inicial; a mesma seed gera sempre a mesma grade. Sem `--seed`, a seed vem da hora e do número do processo e o programa imprime a seed usada |
+| `--periods 4` ou `8` | períodos considerados (padrão 4); com `8` também gera `results/schedule.html`; com `4` o programa informa que o HTML só é gerado com `--periods 8` |
 | `--runs N` | executa N seeds consecutivas a partir de `--seed`; o relatório usa 30 |
 | `--population N` | tamanho da população (padrão 200) |
 | `--crossover R` / `--mutation R` | taxas entre 0 e 1 (padrão 0.9 e 0.02) |
@@ -45,8 +45,12 @@ Os dados foram extraídos uma vez para CSV em `data/`:
 | `data/courses.csv` | código, período, aulas semanais, professores e se aceita sábado |
 | `data/prerequisites.csv` | pares disciplina e pré-requisito |
 | `data/blocked.csv` | slots em que um professor já tem aula de outra turma |
+| `data/real_schedule.csv` | aulas reais de 2026/2 das turmas CC1 a CC8 (`code,class,professor,slot,room`), usadas só no HTML |
+| `data/course_names.csv` | nome de cada código, da matriz curricular (`code,name`), usado só no HTML |
 
 Fontes: matriz curricular 11 do curso e Mapas de Aulas e Permanências de 2026/2. As aulas semanais vêm da matriz curricular e os professores vêm dos mapas.
+
+`data/real_schedule.csv` tem 219 aulas, extraídas dos 19 mapas de aulas: o professor vem do nome do arquivo, a turma, o código e a sala vêm do texto de cada aula, e o dia vem da posição horizontal da aula contra o cabeçalho do próprio PDF. Ficam de fora `TCC22` e as aulas de turmas fora de CC1 a CC8 (como `AG1`, `AG2`, `AG9` e `CB7`). A contagem por disciplina foi conferida com uma contagem por expressão regular na saída de `pdftotext -layout`, e os dois resultados coincidem.
 
 Decisões sobre os dados:
 
@@ -102,7 +106,7 @@ O ciclo executa no mínimo 500 gerações, como pede o enunciado, mesmo se a pen
 
 ## Resultados
 
-Comando: `./trabalho2 --seed 1 --runs 30`, que executa as seeds 1 a 30 com os valores padrão.
+Comando: `./trabalho2 --seed 1 --runs 30`, que executa as seeds 1 a 30 com os valores padrão. Os resultados abaixo usaram `--seed 1 --runs 30`; sem `--seed`, a seed muda a cada execução.
 
 Conteúdo de `results/summary.csv`:
 
@@ -192,28 +196,35 @@ T6       -                -                -                -                -  
 ## Limitações
 
 - O resultado é uma simulação com os professores de 2026/2. A grade não é oficial.
-- Salas são ignoradas.
+- Salas são ignoradas pelo AG; elas só aparecem na grade real do HTML.
 - Não há restrições suaves: preferências de horário, janelas entre aulas e distribuição pela semana não são avaliadas. Por isso a grade só garante a ausência de conflitos.
-- Não foi feita comparação com a grade real de 2026/2, que está fora do escopo.
+- A comparação com a grade real de 2026/2 existe apenas como exibição lado a lado no HTML extra; não há métrica de comparação.
 - `TCC1` e `TCC2` usam as aulas da matriz, e as aulas noturnas da `CB7` não entram nos slots.
 - Os parâmetros (população, taxas, `k`, elitismo) não foram ajustados por experimentos comparativos; foram fixados no projeto e validados pelos resultados acima.
 - Os resultados dependem do gerador pseudoaleatório próprio e das seeds 1 a 30.
 
 ## Extra: grade em HTML
 
-Fora do escopo avaliado. `./trabalho2 --seed 1 --periods 8` roda o mesmo AG para os 8 períodos (222 aulas semanais), terminou com penalidade 0 em 500 gerações (cerca de 2 s, variável conforme a máquina) e escreve `results/schedule.html`, com um slide por período e um aviso de que a grade é simulação baseada em 2026/2. A navegação por teclado e botões do HTML ainda não foi executada em um navegador.
+Fora do escopo avaliado. `./trabalho2 --seed 1 --periods 8` roda o mesmo AG para os 8 períodos (222 aulas semanais), terminou com penalidade 0 em 500 gerações (cerca de 2 s, variável conforme a máquina) e escreve `results/schedule.html`. Com `--periods 4` o arquivo não é gerado e o programa avisa. Se `data/real_schedule.csv` ou `data/course_names.csv` não existir com `--periods 8`, o programa imprime o erro e sai com código 1.
 
-Observação: cada execução sobrescreve `results/history.csv` e `results/summary.csv`. Os CSV deste relatório foram gerados pela execução com `--periods 4`, feita depois da de 8 períodos.
+O HTML tem um slide por período, com navegação por botões e setas do teclado. Cada slide mostra duas tabelas lado a lado (empilhadas em telas estreitas): `Grade real 2026/2` e `Grade gerada pelo AG`. As duas seguem o formato do Mapa de Aulas, com as linhas `M1` a `M6` e `T1` a `T6` com horário de início, os intervalos da manhã (10:00) e da tarde (15:30) e as colunas de segunda a sábado. Cada célula mostra nome, código e professor; na grade real também aparece a sala. A tabela do AG mostra a seed e a penalidade. Uma célula com várias aulas mostra todas, porque optativas podem coincidir na grade real.
+
+O aviso `Grade simulada a partir dos professores de 2026/2. Não é a grade oficial.` vale para a tabela do AG. Nota factual: a grade real tem 219 aulas nas turmas CC1 a CC8 e a do AG tem 222, pois `TCC1` e `TCC2` usam as aulas da matriz curricular. Este trabalho não faz avaliação de qualidade de uma grade em relação à outra.
+
+O HTML foi renderizado com `firefox --headless --screenshot` em 1400 px e 390 px de largura. A navegação por botões e teclado não foi executada em um navegador.
+
+Observação: cada execução sobrescreve `results/history.csv` e `results/summary.csv`. Os CSV deste relatório foram gerados por `./trabalho2 --seed 1 --runs 30`, executado depois da execução com `--periods 8`.
 
 ## Testes
 
-`make test` compila e executa `tests/run_tests`: 223 verificações, 0 falhas, resultado PASS. Os testes cobrem:
+`make test` compila e executa `tests/run_tests`: 502 verificações, 0 falhas, resultado PASS. Os testes cobrem:
 
 - contagem de cada tipo de conflito do fitness em casos montados à mão;
 - crossover e mutação só produzem genes válidos;
 - mesma seed produz o mesmo resultado;
 - um verificador independente (`tests/verify_schedule.c`) recontabiliza os conflitos da melhor grade sem usar `src/fitness`;
-- leitura dos CSV, incluindo arquivos inválidos (`tests/fixtures`), CLI e relatório.
+- leitura dos CSV, incluindo arquivos inválidos (`tests/fixtures`), CLI (com e sem `--seed`) e relatório;
+- leitura da grade real e dos nomes (arquivo válido, CRLF, slot inválido e arquivo ausente) e o conteúdo do HTML.
 
 A compilação usa `-std=c11 -Wall -Wextra -Werror` e termina sem avisos.
 
@@ -227,8 +238,9 @@ A compilação usa `-std=c11 -Wall -Wextra -Werror` e termina sem avisos.
 | `src/genetic.c` | seleção, crossover, mutação, elitismo e parada |
 | `src/rng.c` | gerador pseudoaleatório próprio |
 | `src/cli.c` | leitura das opções |
+| `src/real_schedule.c` | lê a grade real e os nomes das disciplinas |
 | `src/report.c` | terminal, CSV e HTML |
 | `src/main.c` | coordena a execução |
 | `tests/` | testes e verificador independente |
-| `data/` | CSV de disciplinas, pré-requisitos e bloqueios |
+| `data/` | CSV de disciplinas, pré-requisitos, bloqueios, grade real e nomes |
 | `results/` | `history.csv`, `summary.csv` e `schedule.html` |
