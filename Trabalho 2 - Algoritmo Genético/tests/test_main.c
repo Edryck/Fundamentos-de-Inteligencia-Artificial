@@ -13,6 +13,7 @@ int main(void)
     test_cli_run();
     test_real_schedule_run();
     test_report_run();
+    test_live_run();
 
     printf("%d checks, %d failed\n", test_checks_run, test_checks_failed);
     if (test_checks_failed == 0) {

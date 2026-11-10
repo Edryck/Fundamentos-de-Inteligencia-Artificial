@@ -124,7 +124,29 @@ static void copy_elites(const Individual *current, Individual *next, int size, i
     }
 }
 
+static void notify(GeneticObserver observer, void *context, int generation, const Individual *population, int size, int best)
+{
+    GeneticProgress progress;
+    double total = 0.0;
+    int index;
+
+    for (index = 0; index < size; index++) {
+        total += population[index].penalty;
+    }
+    progress.generation = generation;
+    progress.best_penalty = population[best].penalty;
+    progress.mean_penalty = total / size;
+    progress.best = &population[best];
+    observer(&progress, context);
+}
+
 int genetic_run(GeneticResult *result, const GeneticConfig *config, const BlockList *list, const Dataset *dataset, unsigned long long seed)
+{
+    return genetic_run_observed(result, config, list, dataset, seed, NULL, NULL);
+}
+
+int genetic_run_observed(GeneticResult *result, const GeneticConfig *config, const BlockList *list, const Dataset *dataset,
+                         unsigned long long seed, GeneticObserver observer, void *context)
 {
     Rng rng;
     Individual *current;
@@ -188,6 +210,9 @@ int genetic_run(GeneticResult *result, const GeneticConfig *config, const BlockL
         result->best_penalty_history[generation - 1] = current[best].penalty;
         result->best = current[best];
         result->generations = generation;
+        if (observer != NULL) {
+            notify(observer, context, generation, current, size, best);
+        }
         if ((generation >= config->min_generations && current[best].penalty == 0) || generation == config->max_generations) {
             break;
         }

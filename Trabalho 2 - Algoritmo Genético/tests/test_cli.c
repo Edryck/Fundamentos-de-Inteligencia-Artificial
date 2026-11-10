@@ -72,6 +72,23 @@ static void expect_invalid(int argc, char **argv)
     CHECK(error[0] != '\0');
 }
 
+static void test_cli_live(void)
+{
+    CliOptions options;
+    char error[256];
+    char *plain[] = {"trabalho2"};
+    char *live[] = {"trabalho2", "--live-period", "7", "--live", "--delay", "0", "--periods", "8"};
+
+    CHECK(parse(&options, 1, plain, error) == 0);
+    CHECK(options.live == 0);
+    CHECK(options.delay_ms == 20);
+    CHECK(options.live_period == 1);
+    CHECK(parse(&options, 8, live, error) == 0);
+    CHECK(options.live == 1);
+    CHECK(options.delay_ms == 0);
+    CHECK(options.live_period == 7);
+}
+
 static void test_cli_invalid(void)
 {
     char *periods[] = {"trabalho2", "--periods", "5"};
@@ -83,7 +100,21 @@ static void test_cli_invalid(void)
     char *generations[] = {"trabalho2", "--generations", "499"};
     char *unknown[] = {"trabalho2", "--bogus", "1"};
     char *missing[] = {"trabalho2", "--seed"};
+    char *delay_alone[] = {"trabalho2", "--delay", "10"};
+    char *delay_negative[] = {"trabalho2", "--live", "--delay", "-1"};
+    char *delay_text[] = {"trabalho2", "--live", "--delay", "abc"};
+    char *delay_high[] = {"trabalho2", "--live", "--delay", "5001"};
+    char *period_alone[] = {"trabalho2", "--live-period", "2"};
+    char *period_outside[] = {"trabalho2", "--live", "--live-period", "5"};
+    char *period_zero[] = {"trabalho2", "--live", "--periods", "8", "--live-period", "0"};
 
+    expect_invalid(3, delay_alone);
+    expect_invalid(4, delay_negative);
+    expect_invalid(4, delay_text);
+    expect_invalid(4, delay_high);
+    expect_invalid(3, period_alone);
+    expect_invalid(4, period_outside);
+    expect_invalid(6, period_zero);
     expect_invalid(3, periods);
     expect_invalid(3, seed);
     expect_invalid(3, negative);
@@ -162,6 +193,7 @@ void test_cli_run(void)
     test_cli_values();
     test_cli_seed_given();
     test_cli_invalid();
+    test_cli_live();
     test_verify_real_data();
     test_verify_hand_built();
     test_verify_random_agreement();

@@ -8,10 +8,12 @@
 #include "genetic.h"
 #include "report.h"
 #include "real_schedule.h"
+#include "live.h"
 
 static Dataset dataset;
 static BlockList list;
 static RealSchedule real;
+static LiveView live;
 
 int main(int argc, char **argv)
 {
@@ -56,10 +58,27 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if (options.live && !live_available()) {
+        fprintf(stderr, "warning: --live needs a terminal of at least %d columns and %d lines, using plain output\n",
+                LIVE_MIN_COLUMNS, LIVE_MIN_LINES);
+        options.live = 0;
+    }
+    if (options.live) {
+        live_init(&live, &list, &dataset, options.live_period, options.delay_ms, options.runs, &options.genetic);
+        live_start();
+    }
+
     clock_gettime(CLOCK_MONOTONIC, &start);
     for (run = 0; run < options.runs; run++) {
         seed = options.seed + (unsigned long long)run;
-        if (genetic_run(&result, &options.genetic, &list, &dataset, seed) != 0) {
+        if (options.live) {
+            live_begin_run(&live, run + 1, seed);
+        }
+        if (genetic_run_observed(&result, &options.genetic, &list, &dataset, seed,
+                                 options.live ? live_observe : NULL, &live) != 0) {
+            if (options.live) {
+                live_finish(&live);
+            }
             fprintf(stderr, "error: genetic run failed\n");
             if (found) {
                 genetic_result_free(&best_result);
@@ -68,8 +87,12 @@ int main(int argc, char **argv)
             return 1;
         }
         penalties[run] = result.best.penalty;
-        printf("run %d: seed %llu, generations %d, penalty %d\n", run + 1, seed,
-               result.generations, result.best.penalty);
+        if (options.live) {
+            live_draw(&live);
+        } else {
+            printf("run %d: seed %llu, generations %d, penalty %d\n", run + 1, seed,
+                   result.generations, result.best.penalty);
+        }
         if (!found || result.best.penalty < best_result.best.penalty) {
             if (found) {
                 genetic_result_free(&best_result);
@@ -82,6 +105,9 @@ int main(int argc, char **argv)
         }
     }
     clock_gettime(CLOCK_MONOTONIC, &finish);
+    if (options.live) {
+        live_finish(&live);
+    }
     elapsed = (double)(finish.tv_sec - start.tv_sec) + (double)(finish.tv_nsec - start.tv_nsec) / 1e9;
     summary_compute(&summary, penalties, options.runs);
     free(penalties);

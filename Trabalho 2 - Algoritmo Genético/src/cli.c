@@ -59,14 +59,24 @@ int cli_parse(CliOptions *options, int argc, char **argv, char *error, size_t er
     options->seed_given = 0;
     options->periods = 4;
     options->runs = 1;
+    options->live = 0;
+    options->live_period = 1;
+    options->live_period_given = 0;
+    options->delay_ms = 20;
+    options->delay_given = 0;
     options->genetic = genetic_default_config();
 
     for (index = 1; index < argc; index++) {
         name = argv[index];
+        if (strcmp(name, "--live") == 0) {
+            options->live = 1;
+            continue;
+        }
         if (strncmp(name, "--", 2) != 0 || (strcmp(name, "--seed") != 0 && strcmp(name, "--periods") != 0
             && strcmp(name, "--runs") != 0 && strcmp(name, "--population") != 0
             && strcmp(name, "--crossover") != 0 && strcmp(name, "--mutation") != 0
-            && strcmp(name, "--generations") != 0)) {
+            && strcmp(name, "--generations") != 0 && strcmp(name, "--delay") != 0
+            && strcmp(name, "--live-period") != 0)) {
             error_set(error, error_size, "unknown option: %s", name);
             return -1;
         }
@@ -112,6 +122,11 @@ int cli_parse(CliOptions *options, int argc, char **argv, char *error, size_t er
                 minimum = 3;
             } else if (strcmp(name, "--generations") == 0) {
                 minimum = 500;
+            } else if (strcmp(name, "--delay") == 0) {
+                minimum = 0;
+                maximum = 5000;
+            } else if (strcmp(name, "--live-period") == 0) {
+                maximum = 8;
             }
             if (parse_integer(text, minimum, maximum, &integer) != 0
                 || (strcmp(name, "--periods") == 0 && integer != 4 && integer != 8)) {
@@ -122,12 +137,26 @@ int cli_parse(CliOptions *options, int argc, char **argv, char *error, size_t er
                 options->periods = (int)integer;
             } else if (strcmp(name, "--runs") == 0) {
                 options->runs = (int)integer;
+            } else if (strcmp(name, "--delay") == 0) {
+                options->delay_ms = (int)integer;
+                options->delay_given = 1;
+            } else if (strcmp(name, "--live-period") == 0) {
+                options->live_period = (int)integer;
+                options->live_period_given = 1;
             } else if (strcmp(name, "--population") == 0) {
                 options->genetic.population_size = (int)integer;
             } else {
                 options->genetic.max_generations = (int)integer;
             }
         }
+    }
+    if (!options->live && (options->delay_given || options->live_period_given)) {
+        error_set(error, error_size, "%s requires --live", options->delay_given ? "--delay" : "--live-period");
+        return -1;
+    }
+    if (options->live_period > options->periods) {
+        error_set(error, error_size, "invalid value for %s", "--live-period");
+        return -1;
     }
     return 0;
 }

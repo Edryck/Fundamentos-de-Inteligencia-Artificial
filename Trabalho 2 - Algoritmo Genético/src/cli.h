@@ -9,6 +9,11 @@ typedef struct {
     int seed_given;
     int periods;
     int runs;
+    int live;
+    int live_period;
+    int live_period_given;
+    int delay_ms;
+    int delay_given;
     GeneticConfig genetic;
 } CliOptions;
 

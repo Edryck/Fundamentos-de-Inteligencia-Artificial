@@ -19,6 +19,9 @@ Opções:
 | `--seed N` | seed inicial; a mesma seed gera sempre a mesma grade. Sem `--seed`, a seed vem da hora e do número do processo e o programa imprime a seed usada |
 | `--periods 4` ou `8` | períodos considerados (padrão 4); com `8` também gera `results/schedule.html`; com `4` o programa informa que o HTML só é gerado com `--periods 8` |
 | `--runs N` | executa N seeds consecutivas a partir de `--seed`; o relatório usa 30 |
+| `--live` | mostra painel no terminal, atualizado a cada geração; a grade final não muda. Exige terminal de 80x24 ou maior; caso contrário, usa a saída normal |
+| `--delay MS` | pausa por geração no painel, de 0 a 5000 ms; padrão 20; exige `--live` |
+| `--live-period N` | período mostrado no painel; padrão 1; exige `--live` |
 | `--population N` | tamanho da população (padrão 200) |
 | `--crossover R` / `--mutation R` | taxas entre 0 e 1 (padrão 0.9 e 0.02) |
 | `--generations N` | máximo de gerações (mínimo 500, padrão 2000) |
